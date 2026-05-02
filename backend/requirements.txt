@@ -1,4 +1,4 @@
-fastapi
-uvicorn
-supabase
-python-multipart
+fastapi==0.115.12
+uvicorn==0.34.0
+supabase==2.15.0
+python-multipart==0.0.20
