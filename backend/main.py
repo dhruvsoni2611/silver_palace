@@ -6,9 +6,9 @@ from supabase import create_client, Client
 
 app = FastAPI()
 
-# Supabase Setup
-SUPABASE_URL = "https://yoslmwefsultpboxhzmn.supabase.co"
-SUPABASE_KEY = "sb_publishable_W8jdJIVgSs0wbA-nb_iufw_nnIqsMfP"
+# Supabase Setup — credentials loaded from environment variables
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://yoslmwefsultpboxhzmn.supabase.co")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Allow CORS for frontend
