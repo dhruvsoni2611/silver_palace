@@ -108,7 +108,7 @@ async function handleProductSubmit(event) {
     messageDiv.style.color = "blue";
 
     try {
-        const response = await fetch('http://localhost:8000/api/products', {
+        const response = await fetch(`${API_BASE_URL}/api/products`, {
             method: 'POST',
             body: formData
         });

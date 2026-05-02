@@ -137,7 +137,7 @@ async function fetchProducts(category, subCategory, weightRange) {
     grid.innerHTML = '<p style="color:#888; text-align:center; grid-column:1/-1; padding:3rem;">Loading products...</p>';
 
     try {
-        const url = new URL('http://localhost:8000/api/products');
+        const url = new URL(`${API_BASE_URL}/api/products`);
         if (category)    url.searchParams.append('category', category);
         if (subCategory) url.searchParams.append('sub_category', subCategory);
         if (weightRange) url.searchParams.append('weight_range', weightRange);
@@ -234,7 +234,7 @@ window.deleteProduct = async function(code_no) {
         if (!confirm("Are you sure you want to permanently delete this product?")) return;
         
         try {
-            const response = await fetch(`http://localhost:8000/api/products/${code_no}`, {
+            const response = await fetch(`${API_BASE_URL}/api/products/${code_no}`, {
                 method: 'DELETE'
             });
             const result = await response.json();
