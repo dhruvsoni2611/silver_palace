@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, UploadFile, File, Form
+from fastapi import FastAPI, Query, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import uuid
@@ -9,7 +9,16 @@ app = FastAPI()
 # Supabase Setup — credentials loaded from environment variables
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://yoslmwefsultpboxhzmn.supabase.co")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+supabase: Client = None
+
+def get_supabase():
+    global supabase
+    if supabase is None:
+        if not SUPABASE_KEY:
+            raise HTTPException(status_code=500, detail="SUPABASE_KEY environment variable not set")
+        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    return supabase
 
 # Allow CORS for frontend
 app.add_middleware(
@@ -22,7 +31,7 @@ app.add_middleware(
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "supabase_url": SUPABASE_URL, "key_set": bool(SUPABASE_KEY)}
 
 @app.get("/api/products")
 async def get_products(
@@ -31,13 +40,13 @@ async def get_products(
     weight_range: str = Query(None, description="Filter by weight range (5-10 gms, 10-15 gms, etc.)")
 ):
     try:
-        query = supabase.table("products").select("*")
+        db = get_supabase()
+        query = db.table("products").select("*")
         if category:
             query = query.eq("category", category.upper())
         if sub_category:
             query = query.eq("sub_category", sub_category)
         if weight_range:
-            # We can use Supabase .eq() on the weight_range column. For backwards compatibility with old numerical weight:
             if weight_range == "5-10 gms":
                 query = query.or_(f"weight_range.eq.5-10 gms,and(weight.gte.5,weight.lte.10)")
             elif weight_range == "10-15 gms":
@@ -50,6 +59,8 @@ async def get_products(
                 query = query.eq("weight_range", weight_range)
         response = query.execute()
         return response.data
+    except HTTPException:
+        raise
     except Exception as e:
         return {"error": str(e)}
 
@@ -62,25 +73,22 @@ async def add_product(
     images: list[UploadFile] = File(...)
 ):
     try:
+        db = get_supabase()
         inserted_products = []
         for image in images:
             if not image.filename:
                 continue
-            # 1. Upload Image to Supabase Storage
             file_ext = image.filename.split(".")[-1]
             file_name = f"{uuid.uuid4()}.{file_ext}"
             file_content = await image.read()
             
-            supabase.storage.from_("product-images").upload(
+            db.storage.from_("product-images").upload(
                 path=file_name,
                 file=file_content,
                 file_options={"content-type": image.content_type}
             )
+            image_url = db.storage.from_("product-images").get_public_url(file_name)
             
-            # 2. Get Public URL
-            image_url = supabase.storage.from_("product-images").get_public_url(file_name)
-            
-            # 3. Insert into Table (Each image becomes a separate product)
             product_data = {
                 "item_name": item_name,
                 "category": category.upper(),
@@ -89,18 +97,23 @@ async def add_product(
                 "image_url": image_url,
                 "weight_range": weight_range
             }
-            db_response = supabase.table("products").insert(product_data).execute()
+            db_response = db.table("products").insert(product_data).execute()
             inserted_products.extend(db_response.data)
 
         return {"success": True, "data": inserted_products}
         
+    except HTTPException:
+        raise
     except Exception as e:
         return {"success": False, "error": str(e)}
 
 @app.delete("/api/products/{code_no}")
 async def delete_product(code_no: str):
     try:
-        response = supabase.table("products").delete().eq("code_no", code_no).execute()
+        db = get_supabase()
+        response = db.table("products").delete().eq("code_no", code_no).execute()
         return {"success": True, "data": response.data}
+    except HTTPException:
+        raise
     except Exception as e:
         return {"success": False, "error": str(e)}
