@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Silver Palace – Premium Jewelry</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="script.js"></script>
+    <script defer src="shop.js"></script>
+    <script defer src="admin.js"></script>
+    <script defer src="cart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <meta name="description" content="Silver Palace offers exquisite jewelry collections crafted with elegance. Explore our premium selections online." />
+</head>
+<body>
+    <nav class="navbar" id="mainNavbar">
+        <div class="nav-left">
+            <div class="hamburger" id="hamburgerMenu">
+                <span></span><span></span><span></span>
+            </div>
+            <a class="logo" onclick="navigateTo('home')" style="display: flex; align-items: center; gap: 0.8rem;">
+                <img src="assets/logo.jpg" alt="Silver Palace Logo" style="height: 45px; width: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-gold);">
+                Silver Palace
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><button onclick="navigateTo('home')">Home</button></li>
+            <li><button onclick="navigateTo('shop', 'MEN')">Collections</button></li>
+            <li><button onclick="showCart()" class="cart-btn">Cart (<span id="cart-count">0</span>)</button></li>
+        </ul>
+    </nav>
+
+    <!-- Slide-out Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="side-menu" id="sideMenu">
+        <button class="close-btn" id="closeSidebar">&times;</button>
+        <h2 class="side-menu-title">Control Panel</h2>
+        <hr class="side-divider">
+        <ul class="side-nav-links">
+            <li><button onclick="navigateTo('home')" class="admin-btn-side" style="margin-bottom: 1rem; background-color: white; color: var(--primary-green);">Home</button></li>
+            
+            <li style="margin-bottom: 1rem;">
+                <button class="admin-btn-side dropdown-btn" id="categoryDropdownBtn" style="background-color: white; color: var(--primary-green); display: flex; justify-content: space-between; align-items: center;">
+                    Collections <span>▼</span>
+                </button>
+                <div class="side-dropdown-content" id="sideCategoryDropdown">
+                    <button onclick="navigateTo('shop', 'MEN')" class="side-sub-btn">MEN</button>
+                    <button onclick="navigateTo('shop', 'WOMEN')" class="side-sub-btn">WOMEN</button>
+                    <button onclick="navigateTo('shop', 'KIDS')" class="side-sub-btn">KIDS</button>
+                    <button onclick="navigateTo('shop', 'IDOLS')" class="side-sub-btn">IDOLS</button>
+                </div>
+            </li>
+
+            <li><button onclick="handleAdminAccess()" class="admin-btn-side">Admin Access</button></li>
+        </ul>
+    </div>
+
+    <div id="home-view">
+        <header class="hero">
+            <section class="hero-content">
+                <h2>Exquisite Craftsmanship.<br>Timeless Elegance.</h2>
+                <p>Discover our curated collection of premium silver jewelry designed for those who appreciate the finer things in life.</p>
+                <button class="cta-btn" onclick="navigateTo('shop', 'MEN')">Explore Collections</button>
+            </section>
+        </header>
+        <main>
+            <section id="collection" class="gallery">
+                <h3>Featured Collection</h3>
+                <p class="gallery-subtitle">A glimpse into our finest pieces</p>
+                <div class="featured-carousel" id="featuredCarousel">
+                    <div class="featured-card"><img id="fc1" src="" alt="Featured 1" /></div>
+                    <div class="featured-card"><img id="fc2" src="" alt="Featured 2" /></div>
+                    <div class="featured-card"><img id="fc3" src="" alt="Featured 3" /></div>
+                    <div class="featured-card"><img id="fc4" src="" alt="Featured 4" /></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="shop-view" style="display: none;"></div>
+    <div id="admin-view" style="display: none;"></div>
+    <div id="cart-view" style="display: none;"></div>
+    <div id="checkout-view" style="display: none;"></div>
+
+    <footer>
+        <p>&copy; 2026 <span>Silver Palace</span>. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+

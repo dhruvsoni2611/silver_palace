@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        // Redirect shop.html links to the new SPA structure
+        const params = new URLSearchParams(window.location.search);
+        const category = params.get('category') || 'MEN';
+        window.location.href = '/?view=shop&category=' + category;
+    </script>
+</head>
+<body>
+    Redirecting to Shop...
+</body>
+</html>
